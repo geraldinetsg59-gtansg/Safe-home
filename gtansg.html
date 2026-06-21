@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Resilient Path - Empowerment Game</title>
+    <style>
+        body { font-family: 'Inter', system_ui, sans-serif; background: linear-gradient(to bottom, #f0f4f8, #e0e7f0); margin: 0; padding: 15px; color: #333; line-height: 1.6; }
+        .container { max-width: 920px; margin: 0 auto; background: white; border-radius: 20px; box-shadow: 0 15px 40px rgba(0,0,0,0.12); overflow: hidden; }
+        header { background: linear-gradient(135deg, #4a6fa5, #3a5a8a); color: white; padding: 28px 25px; text-align: center; }
+        .stats { display: flex; flex-wrap: wrap; justify-content: space-around; padding: 20px; background: #f8f9fa; gap: 14px; }
+        .stat { text-align: center; min-width: 95px; }
+        .bar { height: 11px; background: #e0e0e0; margin-top: 7px; border-radius: 999px; overflow: hidden; }
+        .bar-fill { height: 100%; background: linear-gradient(to right, #4a6fa5, #e07a5f); transition: width 0.6s ease; }
+        .scenario { padding: 28px 25px; text-align: center; }
+        .grok-image { max-width: 100%; border-radius: 16px; margin: 18px 0; box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
+        .choices { display: flex; flex-direction: column; gap: 13px; margin-top: 22px; }
+        button { padding: 17px 22px; background: #4a6fa5; color: white; border: none; border-radius: 14px; cursor: pointer; font-size: 15.5px; transition: all 0.3s ease; }
+        button:hover { background: #3a5a8a; transform: translateY(-3px); }
+        .feedback { margin: 24px 25px; padding: 22px; background: #e8f5e9; border-radius: 14px; display: none; animation: fadeIn 0.4s; }
+        .resources { padding: 28px 25px; background: #fff3e0; text-align: center; }
+        .quick-exit { position: fixed; top: 20px; right: 20px; background: #d32f2f; color: white; padding: 12px 22px; border-radius: 50px; font-weight: bold; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        .disclaimer { background: #fff3e0; padding: 16px; border-radius: 12px; font-size: 0.92rem; margin: 18px 25px; border-left: 5px solid #d32f2f; }
+        .how-to { background: #f0f4f8; padding: 18px 22px; margin: 20px 25px; border-radius: 12px; font-size: 0.95rem; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body>
+    <a href="https://www.google.com" class="quick-exit" target="_blank">🚨 Quick Exit</a>
+    
+    <div class="container">
+        <header>
+            <h1>🌟 Resilient Path</h1>
+            <p>Safe, practical strategies for mothers in challenging marriages</p>
+        </header>
+        
+        <div class="stats" id="stats">
+            <div class="stat"><strong>🛡️ Safety</strong><div class="bar"><div id="safety-bar" class="bar-fill" style="width:65%"></div></div><span id="safety-val">65</span></div>
+            <div class="stat"><strong>💪 Emotional Strength</strong><div class="bar"><div id="emo-bar" class="bar-fill" style="width:55%"></div></div><span id="emo-val">55</span></div>
+            <div class="stat"><strong>💰 Financial Awareness</strong><div class="bar"><div id="fin-bar" class="bar-fill" style="width:45%"></div></div><span id="fin-val">45</span></div>
+            <div class="stat"><strong>👶 Child Protection</strong><div class="bar"><div id="child-bar" class="bar-fill" style="width:75%"></div></div><span id="child-val">75</span></div>
+        </div>
+        
+        <div class="scenario" id="game-area">
+            <h2 id="scenario-title">Welcome to Resilient Path</h2>
+            <p id="scenario-text">You are a mother with young children in an HDB flat. Explore safe strategies step by step.</p>
+            
+            <div class="how-to">
+                <strong>How this game helps:</strong> Each mission presents a common situation. Choose the safer, more empowering option. Your stats will improve as you learn practical strategies. This is for education and awareness only.
+            </div>
+            
+            <img src="https://grok.x.ai/your-welcome-kawaii-mother-image" alt="Welcome Illustration" class="grok-image" id="grok-image">
+            
+            <div class="choices" id="choices">
+                <button onclick="startGame()">🚀 Begin Your Journey</button>
+            </div>
+        </div>
+        
+        <div id="feedback" class="feedback"></div>
+        
+        <div class="resources">
+            <h3>🚨 Important Help Resources (Singapore)</h3>
+            <p><strong>AWARE Women’s Helpline:</strong> 1800-777-5555 (Mon–Fri 10am–6pm)<br>
+               <strong>NAVH 24/7 Family Violence Hotline:</strong> 1800-777-0000<br>
+               <strong>Police Emergency:</strong> 999</p>
+            <div class="disclaimer">
+                <strong>Strong Disclaimer:</strong> This is an educational game only. It is not professional advice. In danger, contact helplines or police immediately. Seek legal and counselling support.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let stats = { safety: 65, emo: 55, fin: 45, child: 75 };
+        let currentScenarioIndex = 0;
+        
+        function loadProgress() {
+            const saved = localStorage.getItem('resilientPathStats');
+            if (saved) stats = JSON.parse(saved);
+        }
+        
+        function saveProgress() {
+            localStorage.setItem('resilientPathStats', JSON.stringify(stats));
+        }
+        
+        function updateStats() {
+            document.getElementById('safety-val').textContent = stats.safety;
+            document.getElementById('safety-bar').style.width = stats.safety + '%';
+            document.getElementById('emo-val').textContent = stats.emo;
+            document.getElementById('emo-bar').style.width = stats.emo + '%';
+            document.getElementById('fin-val').textContent = stats.fin;
+            document.getElementById('fin-bar').style.width = stats.fin + '%';
+            document.getElementById('child-val').textContent = stats.child;
+            document.getElementById('child-bar').style.width = stats.child + '%';
+            saveProgress();
+        }
+        
+        const scenarios = [
+            // 8 scenarios as requested earlier (I can add more if you want 12)
+            { title: "Mission 1: Financial Control", text: "Husband controls money. HDB charges and school needs due.", image: "https://grok.x.ai/kawaii-mother-financial-scene", choices: [
+                { text: "Stay silent", delta: {fin:-10,safety:-8}, feedback: "Short-term survival but limits options." },
+                { text: "Document quietly & research rights", delta: {fin:22,emo:12}, feedback: "Good step. Maintenance rights exist under Women's Charter." }
+            ]},
+            { title: "Mission 2: Criticism in Front of Kids", text: "He belittles you in front of children.", image: "https://grok.x.ai/kawaii-mother-protecting-kids", choices: [
+                { text: "Stay silent", delta: {emo:-12,child:-10}, feedback: "Harmful long-term." },
+                { text: "Calmly remove kids", delta: {emo:18,child:20}, feedback: "Protects children." }
+            ]},
+            { title: "Mission 3: Feeling Isolated", text: "You feel isolated due to control and family pressure.", image: "https://grok.x.ai/kawaii-mother-seeking-support", choices: [
+                { text: "Keep everything inside", delta: {emo:-15}, feedback: "Increases loneliness." },
+                { text: "Reach out to AWARE or FSC privately", delta: {emo:20,safety:10}, feedback: "Building support is key." }
+            ]},
+            { title: "Mission 4: Planning for Safety", text: "You want to plan ahead safely.", image: "https://grok.x.ai/kawaii-mother-safety-plan", choices: [
+                { text: "Do nothing", delta: {safety:-5}, feedback: "Status quo." },
+                { text: "Learn about PPO & Legal Aid", delta: {safety:18,fin:10}, feedback: "Knowledge is protection." }
+            ]},
+            { title: "Mission 5: Self-Care", text: "You feel exhausted. How to care for yourself?", image: "https://grok.x.ai/kawaii-mother-self-care", choices: [
+                { text: "Ignore your needs", delta: {emo:-10}, feedback: "Leads to burnout." },
+                { text: "Find small safe self-care moments", delta: {emo:22}, feedback: "You can't help others if depleted." }
+            ]},
+            { title: "Mission 6: Emotional Abuse", text: "He constantly criticizes your appearance and abilities.", image: "https://grok.x.ai/kawaii-mother-emotional-abuse", choices: [
+                { text: "Believe his words", delta: {emo:-15}, feedback: "Damages self-worth." },
+                { text: "Affirm your value and seek support", delta: {emo:20,safety:10}, feedback: "Healthy boundary setting." }
+            ]},
+            { title: "Mission 7: Child Wellbeing", text: "Children show signs of stress from home tension.", image: "https://grok.x.ai/kawaii-mother-child-wellbeing", choices: [
+                { text: "Pretend everything is fine", delta: {child:-15}, feedback: "Children sense the tension." },
+                { text: "Spend quality time and reassure them", delta: {child:25,emo:15}, feedback: "Protects their emotional health." }
+            ]},
+            { title: "Mission 8: Seeking Professional Help", text: "You are ready to talk to someone outside the family.", image: "https://grok.x.ai/kawaii-mother-seeking-help", choices: [
+                { text: "Delay reaching out", delta: {safety:-10}, feedback: "Delays support." },
+                { text: "Contact AWARE or a counsellor", delta: {safety:25,emo:20}, feedback: "Brave and important step." }
+            ]}
+        ];
+        
+        function startGame() {
+            currentScenarioIndex = 0;
+            loadScenario(0);
+        }
+        
+        function loadScenario(index) {
+            if (index >= scenarios.length) {
+                document.getElementById('scenario-title').innerHTML = "🌟 Congratulations!";
+                document.getElementById('scenario-text').innerHTML = "You've completed the missions. You are stronger than you think. Keep seeking real support.";
+                document.getElementById('choices').innerHTML = `<button onclick="resetGame()">Restart Game</button>`;
+                return;
+            }
+            const sc = scenarios[index];
+            document.getElementById('scenario-title').textContent = sc.title;
+            document.getElementById('scenario-text').textContent = sc.text;
+            if (sc.image) document.getElementById('grok-image').src = sc.image;
+            
+            let html = '';
+            sc.choices.forEach((choice, i) => {
+                html += `<button onclick="makeChoice(${index}, \( {i})"> \){choice.text}</button>`;
+            });
+            document.getElementById('choices').innerHTML = html;
+            document.getElementById('feedback').style.display = 'none';
+        }
+        
+        function makeChoice(scIndex, choiceIndex) {
+            const choice = scenarios[scIndex].choices[choiceIndex];
+            Object.keys(choice.delta).forEach(key => {
+                stats[key] = Math.max(15, Math.min(100, stats[key] + choice.delta[key]));
+            });
+            updateStats();
+            
+            const fb = document.getElementById('feedback');
+            fb.innerHTML = `<strong>Learning:</strong> ${choice.feedback}<br><br><button onclick="nextScenario()">Next Mission</button>`;
+            fb.style.display = 'block';
+        }
+        
+        function nextScenario() {
+            currentScenarioIndex++;
+            loadScenario(currentScenarioIndex);
+        }
+        
+        function resetGame() {
+            stats = { safety: 65, emo: 55, fin: 45, child: 75 };
+            localStorage.removeItem('resilientPathStats');
+            updateStats();
+            startGame();
+        }
+        
+        // Initialize
+        loadProgress();
+        updateStats();
+    </script>
+</body>
+</html>
